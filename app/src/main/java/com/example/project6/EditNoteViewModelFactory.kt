@@ -12,4 +12,3 @@ class EditNoteViewModelFactory (private val taskId: Long,
         throw IllegalArgumentException("Unknown ViewModel")
     }
 }
-

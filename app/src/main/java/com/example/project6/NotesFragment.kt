@@ -10,9 +10,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.project.NoteItemAdapter
 import com.example.project6.databinding.FragmentNotesBinding
-import com.example.project6.Note
+
 class NotesFragment : Fragment() {
     val TAG = "NotesFragment"
     private var _binding: FragmentNotesBinding? = null
@@ -24,27 +25,36 @@ class NotesFragment : Fragment() {
         _binding = FragmentNotesBinding.inflate(inflater, container, false)
         val view = binding.root
         val application = requireNotNull(this.activity).application
-        val dao = NoteDatabase.getInstance(application).noteDao
+        val dao = NoteDatabase.getInstance(application).noteDao  // Get DAO and ViewModel
         val viewModelFactory = NotesViewModelFactory(dao)
         val viewModel = ViewModelProvider(this, viewModelFactory).get(NotesViewModel::class.java)
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
-
         fun noteClicked (noteId : Long) {
             viewModel.onNoteClicked(noteId)
         }
         fun yesPressed(noteId : Long) {
-            Log.d(TAG, "in yesPressed(): taskId = $noteId")
-            //TODO: delete the task with id = taskId
+            Log.d(TAG, "in yesPressed(): noteId = $noteId")
             binding.viewModel?.deleteNote(noteId)
         }
         fun deleteClicked (noteId : Long) {
             ConfirmDeleteDialogFragment(noteId,::yesPressed).show(childFragmentManager,
                 ConfirmDeleteDialogFragment.TAG)
         }
-        val adapter = NoteItemAdapter(::noteClicked,::deleteClicked)
+        fun titleClicked(noteId: Long){
+            val navController = findNavController()
+            val bundle = Bundle()
+            bundle.putLong("noteId", noteId)
+            navController.navigate(R.id.action_notesFragment_to_editNoteFragment, bundle)
+        }
 
 
+
+
+        val adapter = NoteItemAdapter(::titleClicked,::noteClicked,::deleteClicked)
+
+        val recyclerView = binding.notesList
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.notesList.adapter = adapter
 
         viewModel.notes.observe(viewLifecycleOwner, Observer {
@@ -56,6 +66,7 @@ class NotesFragment : Fragment() {
 
         binding.addNoteBtn.setOnClickListener {
             val args = Bundle()
+            // Navigate to add note screen
             val newNote = viewModel.addNote()
             val newNoteId = newNote.noteId
             args.putLong("noteId", newNoteId)

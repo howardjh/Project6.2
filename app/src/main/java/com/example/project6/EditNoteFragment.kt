@@ -14,6 +14,7 @@ class EditNoteFragment : Fragment() {
     private var _binding: FragmentEditNoteBinding? = null
     private val binding get() = _binding!!
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -21,7 +22,7 @@ class EditNoteFragment : Fragment() {
         _binding = FragmentEditNoteBinding.inflate(inflater, container, false)
         val view = binding.root
         val args = requireArguments()
-        val noteId = args.getLong("noteId")
+        val noteId = args.getLong("noteId") // Get note ID from arguments
         val application = requireNotNull(this.activity).application
         val dao = NoteDatabase.getInstance(application).noteDao
         val viewModelFactory = EditNoteViewModelFactory(noteId, dao)
@@ -33,7 +34,7 @@ class EditNoteFragment : Fragment() {
             viewModel.updateNote()
         }
         viewModel.navigateToList.observe(viewLifecycleOwner, Observer { navigate ->
-            if (navigate) {
+            if (navigate) { // Observe event to navigate back to notes list
                 view.findNavController()
                     .navigate(R.id.action_editNoteFragment_to_notesFragment)
                 viewModel.onNavigatedToList()

@@ -10,7 +10,7 @@ abstract class NoteDatabase : RoomDatabase() {
     companion object{
         @Volatile
         private var INSTANCE: NoteDatabase? = null
-        fun getInstance(context: Context): NoteDatabase{
+        fun getInstance(context: Context): NoteDatabase{  // Create database using Room builder
             synchronized(this){
                 var instance = INSTANCE
                 if(instance == null){

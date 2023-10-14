@@ -10,3 +10,4 @@ class NotesViewModelFactory(private val dao: NoteDao) : ViewModelProvider.Factor
     }
 
 }
+
